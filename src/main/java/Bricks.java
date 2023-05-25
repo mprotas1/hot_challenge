@@ -1,5 +1,3 @@
-package com.protas;
-
 import com.protas.util.InstructionReader;
 
 import java.util.*;
@@ -32,16 +30,19 @@ public class Bricks {
 
         }
         else {
-            System.out.println("Incorrect input path");
+            System.out.println("klops");
         }
 
     }
 
     private static boolean instructionsCorrect(List<String> instructions) {
+
         return instructions.stream()
-                .allMatch(c -> Character.isDigit(c.charAt(0)) &&
-                c.substring(2).chars().allMatch(character -> character >= 'A' && character <= 'O') &&
-                c.length() == 6);
+                .allMatch(c -> c.substring(0, c.indexOf(':')).matches("\\d+") &&
+                        (c.substring(c.indexOf(':') + 1).length() == 4) &&
+                        c.substring(c.indexOf(':') + 1).chars()
+                        .allMatch(character -> character >= 'A' && character <= 'O')
+                );
     }
 
     private static void build(Map<Integer, List<String>> instructions) {
@@ -106,7 +107,7 @@ public class Bricks {
 
         // souting the result of array
         Arrays.stream(results)
-                .forEach(x -> System.out.println(x));
+                .forEach(System.out::println);
     }
 
     // method to map instructions from List<String> to key-value pair Map<Integer, List<String>
@@ -115,8 +116,13 @@ public class Bricks {
 
         // for every instruction in instructions list mapping the parsed values into key-value pair Map
         for(String instruction : instructions) {
-            int key = Integer.parseInt(instruction.substring(0, 1));
-            String value = instruction.substring(2);
+            int colonIndex = instruction.indexOf(":");
+            String instructionNumber = "";
+            if (colonIndex != -1) {
+                instructionNumber = instruction.substring(0, colonIndex);
+            }
+            int key = Integer.parseInt(instructionNumber);
+            String value = instruction.substring(colonIndex);
 
             // if entry already has key just adds the element to the existing list
             if (resultMap.containsKey(key)) {
